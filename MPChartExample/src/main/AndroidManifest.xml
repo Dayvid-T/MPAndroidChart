@@ -53,7 +53,7 @@
         <activity android:name="BarChartPositiveNegative" android:exported="false" />
         <activity android:name="FilledLineActivity" android:exported="false" />
         <activity android:name="HalfPieChartActivity" android:exported="false" />
-        <activity android:name="TimeIntervalChartActivity" android:exported="false" />
+        <activity android:name="com.xxmassdeveloper.chartdemo.TimeIntervalChartActivity" android:exported="false" />
     </application>
 
 </manifest>

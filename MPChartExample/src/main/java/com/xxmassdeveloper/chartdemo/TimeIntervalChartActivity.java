@@ -6,10 +6,12 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.GanttUtils;
+import com.xxmassdeveloper.mpchartexample.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +56,9 @@ public class TimeIntervalChartActivity extends AppCompatActivity {
         chart.setFitBars(true);
         chart.setDrawValueAboveBar(true);
         chart.getXAxis().setDrawLabels(true);
-        chart.getYAxis().setPosition(com.github.mikephil.charting.components.YAxis.YAxisLabelPosition.LEFT);
+        
+        YAxis yl = chart.getAxisLeft();
+        yl.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
 
         // Refresh
         chart.invalidate();
