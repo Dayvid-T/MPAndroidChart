@@ -31,7 +31,8 @@ public class HorizontalBarBuffer extends BarBuffer {
 
                 float bottom = x - barWidthHalf;
                 float top = x + barWidthHalf;
-                float left, right;
+                float left;
+                float right;
                 if (mInverted) {
                     left = y >= 0 ? y : 0;
                     right = y <= 0 ? y : 0;
@@ -52,7 +53,6 @@ public class HorizontalBarBuffer extends BarBuffer {
 
                 float posY = 0f;
                 float negY = -e.getNegativeSum();
-                float yStart = 0f;
 
                 // fill the stack
                 for (int k = 0; k < vals.length; k++) {
@@ -61,23 +61,22 @@ public class HorizontalBarBuffer extends BarBuffer {
 
                     if (value >= 0f) {
                         y = posY;
-                        yStart = posY + value;
-                        posY = yStart;
+                        posY += value;
                     } else {
                         y = negY;
-                        yStart = negY + Math.abs(value);
                         negY += Math.abs(value);
                     }
 
                     float bottom = x - barWidthHalf;
                     float top = x + barWidthHalf;
-                    float left, right;
+                    float left;
+                    float right;
                     if (mInverted) {
-                        left = y >= yStart ? y : yStart;
-                        right = y <= yStart ? y : yStart;
+                        left = y >= posY ? y : posY;
+                        right = y <= posY ? y : posY;
                     } else {
-                        right = y >= yStart ? y : yStart;
-                        left = y <= yStart ? y : yStart;
+                        right = y >= posY ? y : posY;
+                        left = y <= posY ? y : posY;
                     }
 
                     // multiply the height of the rect with the phase

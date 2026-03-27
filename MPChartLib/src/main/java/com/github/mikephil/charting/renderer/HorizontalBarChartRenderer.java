@@ -440,4 +440,39 @@ public class HorizontalBarChartRenderer extends BarChartRenderer {
         return chart.getData().getEntryCount() < chart.getMaxVisibleCount()
                 * mViewPortHandler.getScaleY();
     }
+
+    /**
+     * Feed buffer with time interval data for Gantt-style charts.
+     * Supports BarEntry with float[] {startTime, duration} format.
+     * 
+     * @param buffer The buffer to fill
+     * @param dataSet The dataset containing time interval data
+     */
+    protected void feedTimeIntervalBuffer(BarBuffer buffer, IBarDataSet dataSet) {
+        int bufferIndex = 0;
+        float barWidth = mChart.getBarData().getBarWidth();
+        float barWidthHalf = barWidth / 2f;
+
+        for (int i = 0; i < dataSet.getEntryCount(); i++) {
+            BarEntry entry = dataSet.getEntryForIndex(i);
+            if (entry != null) {
+                float[] vals = entry.getYVals();
+                if (vals != null && vals.length >= 2) {
+                    // vals[0] = start time, vals[1] = duration
+                    float start = vals[0];
+                    for (int k = 1; k < vals.length; k++) {
+                        float end = start + vals[k];
+                        
+                        // Store as [left, top, right, bottom]
+                        buffer.buffer[bufferIndex++] = start;
+                        buffer.buffer[bufferIndex++] = entry.getX() - barWidthHalf;
+                        buffer.buffer[bufferIndex++] = end;
+                        buffer.buffer[bufferIndex++] = entry.getX() + barWidthHalf;
+                        
+                        start = end;
+                    }
+                }
+            }
+        }
+    }
 }
