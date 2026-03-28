@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -17,8 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Example of using HorizontalBarChart for Gantt-style time interval visualization.
- * Shows how to display tasks as horizontal bars with start time and duration.
+ * Demo activity showing Gantt-style time interval visualization using HorizontalBarChart.
+ * Each bar represents a task with start time and duration.
+ * 
+ * This demonstrates how to create project timeline or resource allocation charts
+ * where each horizontal bar represents a task spanning from a start time to an end time.
  */
 public class TimeIntervalChartActivity extends AppCompatActivity {
 
@@ -29,38 +34,55 @@ public class TimeIntervalChartActivity extends AppCompatActivity {
 
         HorizontalBarChart chart = findViewById(R.id.chart);
 
-        // Create sample tasks with time intervals
+        // Create sample project tasks with start times and durations
+        // Format: task row, start time, duration
         List<BarEntry> entries = new ArrayList<>();
+        entries.add(GanttUtils.createTimeIntervalEntry(0, 0, 100));      // Task A: 0-100
+        entries.add(GanttUtils.createTimeIntervalEntry(1, 50, 150));     // Task B: 50-200
+        entries.add(GanttUtils.createTimeIntervalEntry(2, 150, 100));    // Task C: 150-250
 
-        // Task 1: starts at 0, duration 100
-        entries.add(GanttUtils.createTimeIntervalEntry(0, 0, 100));
-
-        // Task 2: starts at 50, duration 150
-        entries.add(GanttUtils.createTimeIntervalEntry(1, 50, 150));
-
-        // Task 3: starts at 150, duration 100
-        entries.add(GanttUtils.createTimeIntervalEntry(2, 150, 100));
-
-        // Create dataset with time interval data
-        BarDataSet dataSet = new BarDataSet(entries, "Tasks");
-        dataSet.setColors(Color.rgb(61, 165, 255), Color.rgb(230, 126, 34), Color.rgb(46, 204, 113));
+        // Create dataset with task data
+        BarDataSet dataSet = new BarDataSet(entries, "Project Tasks");
+        dataSet.setColors(
+            Color.rgb(61, 165, 255),    // Blue
+            Color.rgb(230, 126, 34),    // Orange
+            Color.rgb(46, 204, 113)     // Green
+        );
         dataSet.setBarBorderWidth(1f);
         dataSet.setBarBorderColor(Color.BLACK);
 
-        // Create and set data
+        // Configure chart data
         BarData barData = new BarData(dataSet);
-        barData.setBarWidth(0.8f);
+        barData.setBarWidth(0.6f);
         chart.setData(barData);
 
-        // Configure chart
-        chart.setFitBars(true);
+        // Disable default interactions
         chart.setDrawValueAboveBar(true);
-        chart.getXAxis().setDrawLabels(true);
-        
-        YAxis yl = chart.getAxisLeft();
-        yl.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        chart.setFitBars(true);
+        chart.setPinchZoom(false);
+        chart.setDragEnabled(true);
 
-        // Refresh
+        // Configure X-axis (timeline)
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawGridLines(true);
+
+        // Configure Y-axis (tasks)
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setDrawGridLines(false);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        // Configure legend
+        Legend legend = chart.getLegend();
+        legend.setEnabled(true);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+
         chart.invalidate();
     }
 }
