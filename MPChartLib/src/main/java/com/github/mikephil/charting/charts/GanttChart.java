@@ -81,15 +81,15 @@ public class GanttChart extends View {
         if (data == null || data.getTaskCount() == 0) return 40;
         float availableHeight = chartBottom - chartTop;
         int taskCount = data.getTaskCount();
-        // 80% of slot for bar, 20% for gap
-        return (availableHeight / taskCount) * 0.8f;
+        // 50% of slot for bar, 50% for gap
+        return (availableHeight / taskCount) * 0.5f;
     }
 
     private float getTaskSpacing() {
         if (data == null || data.getTaskCount() == 0) return 12;
         float availableHeight = chartBottom - chartTop;
         int taskCount = data.getTaskCount();
-        return (availableHeight / taskCount) * 0.2f;
+        return (availableHeight / taskCount) * 0.5f;
     }
 
     private void drawGrid(Canvas canvas) {
