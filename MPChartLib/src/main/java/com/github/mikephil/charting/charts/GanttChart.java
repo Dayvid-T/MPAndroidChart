@@ -24,8 +24,8 @@ public class GanttChart extends View {
     private float chartTop;
     private float chartRight;
     private float chartBottom;
-    private float taskHeight = 50;
-    private float padding = 20;
+    private float taskHeight = 35;
+    private float padding = 16;
 
     public GanttChart(Context context) {
         super(context);
@@ -47,12 +47,12 @@ public class GanttChart extends View {
         taskPaint.setAntiAlias(true);
 
         gridPaint = new Paint();
-        gridPaint.setColor(0xFFE0E0E0);
+        gridPaint.setColor(0xFFCCCCCC);
         gridPaint.setStrokeWidth(1);
 
         textPaint = new Paint();
-        textPaint.setColor(0xFF333333);
-        textPaint.setTextSize(36);
+        textPaint.setColor(0xFF666666);
+        textPaint.setTextSize(28);
         textPaint.setAntiAlias(true);
     }
 
@@ -75,10 +75,10 @@ public class GanttChart extends View {
     }
 
     private void calculateDimensions() {
-        chartLeft = padding + 100; // Leave space for labels
-        chartTop = padding;
+        chartLeft = padding + 80; // Leave space for task labels
+        chartTop = padding + 40;
         chartRight = getWidth() - padding;
-        chartBottom = getHeight() - padding;
+        chartBottom = getHeight() - padding - 40;
     }
 
     private void drawGrid(Canvas canvas) {
@@ -109,17 +109,29 @@ public class GanttChart extends View {
             GanttTask task = data.getTask(i);
 
             // Calculate position
-            float taskY = chartTop + i * (taskHeight + 10);
+            float taskY = chartTop + i * (taskHeight + 8);
             float startX = chartLeft + ((task.getStartTime() - minTime) / timeRange) * (chartRight - chartLeft);
             float endX = chartLeft + ((task.getEndTime() - minTime) / timeRange) * (chartRight - chartLeft);
 
-            // Draw task bar
+            // Ensure minimum width for bars
+            if (endX - startX < 10) {
+                endX = startX + 10;
+            }
+
+            // Draw task bar with border
             RectF rect = new RectF(startX, taskY, endX, taskY + taskHeight);
             taskPaint.setColor(task.getColor());
             canvas.drawRect(rect, taskPaint);
 
-            // Draw task label
-            canvas.drawText(task.getName(), padding, taskY + taskHeight / 2 + 12, textPaint);
+            // Draw border
+            Paint borderPaint = new Paint();
+            borderPaint.setColor(0xFF999999);
+            borderPaint.setStrokeWidth(2);
+            borderPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawRect(rect, borderPaint);
+
+            // Draw task label on left
+            canvas.drawText(task.getName(), padding + 8, taskY + taskHeight / 2 + 10, textPaint);
         }
     }
 }
