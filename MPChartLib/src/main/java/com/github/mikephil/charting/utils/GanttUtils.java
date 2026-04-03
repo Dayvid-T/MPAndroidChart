@@ -12,14 +12,16 @@ import com.github.mikephil.charting.data.BarEntry;
  * List<BarEntry> entries = new ArrayList<>();
  * 
  * // Task 1 (row 0): starts at time 0, duration 100
+ * // This creates a bar from 0 to 100 on the X-axis
  * entries.add(GanttUtils.createTimeIntervalEntry(0, 0, 100));
  * 
  * // Task 2 (row 1): starts at time 50, duration 150
+ * // This creates a bar from 50 to 200 on the X-axis
  * entries.add(GanttUtils.createTimeIntervalEntry(1, 50, 150));
  * 
- * // Task 3 (row 2): starts at time 200, has two segments
- * float[] timeIntervals = {200, 100, 250, 75}; // start1, duration1, start2, duration2
- * entries.add(GanttUtils.createMultiSegmentEntry(2, timeIntervals));
+ * // Task 3 (row 2): starts at time 200, duration 75
+ * // This creates a bar from 200 to 275 on the X-axis
+ * entries.add(GanttUtils.createTimeIntervalEntry(2, 200, 75));
  * 
  * // Create dataset and configure chart
  * BarDataSet dataSet = new BarDataSet(entries, "Tasks");
@@ -35,48 +37,33 @@ public class GanttUtils {
 
     /**
      * Create a time interval entry for a single task.
+     * The bar will be positioned at startTime and sized to span the duration.
      * 
      * @param taskIndex Y-axis position (task row)
-     * @param startTime Start time value
-     * @param duration Duration value
-     * @return BarEntry configured for time interval rendering
+     * @param startTime Start time value (X-axis position)
+     * @param duration Duration value (bar length on X-axis)
+     * @return BarEntry representing a time interval
      * 
      * @example
      * // Create task at row 0, starting at time 100, lasting 50 time units
+     * // This renders as a bar from 100 to 150 on the timeline
      * BarEntry entry = GanttUtils.createTimeIntervalEntry(0, 100, 50);
      */
     public static BarEntry createTimeIntervalEntry(float taskIndex, float startTime, float duration) {
-        return new BarEntry(taskIndex, new float[]{startTime, duration});
-    }
-
-    /**
-     * Create a time interval entry with multiple segments.
-     * Useful for showing multiple time ranges for a single task.
-     * 
-     * @param taskIndex Y-axis position (task row)
-     * @param timeIntervals Array of [start1, duration1, start2, duration2, ...]
-     * @return BarEntry configured for time interval rendering
-     * 
-     * @example
-     * // Create task with two time segments
-     * float[] segments = {100, 50, 200, 75}; // segment1: 100-150, segment2: 200-275
-     * BarEntry entry = GanttUtils.createMultiSegmentEntry(1, segments);
-     */
-    public static BarEntry createMultiSegmentEntry(float taskIndex, float[] timeIntervals) {
-        if (timeIntervals == null || timeIntervals.length < 2) {
-            throw new IllegalArgumentException("timeIntervals must have at least 2 elements [startTime, duration]");
-        }
-        return new BarEntry(taskIndex, timeIntervals);
+        // Position bar at middle of interval, Y value is the duration
+        // The bar will extend from (startTime) to (startTime + duration)
+        float barPosition = startTime + (duration / 2f);
+        return new BarEntry(barPosition, duration);
     }
 
     /**
      * Create a time interval entry with custom data.
      * 
-     * @param taskIndex Y-axis position (task row)
-     * @param startTime Start time value
-     * @param duration Duration value
+     * @param taskIndex Y-axis position (task row) - Note: use this to differentiate visually if needed
+     * @param startTime Start time value (X-axis position)
+     * @param duration Duration value (bar length on X-axis)
      * @param data Custom data object to attach to this entry
-     * @return BarEntry configured for time interval rendering with data
+     * @return BarEntry representing a time interval with data
      * 
      * @example
      * // Create task with custom data (e.g., task ID or status)
@@ -84,6 +71,7 @@ public class GanttUtils {
      */
     public static BarEntry createTimeIntervalEntry(float taskIndex, float startTime, 
                                                     float duration, Object data) {
-        return new BarEntry(taskIndex, new float[]{startTime, duration}, data);
+        float barPosition = startTime + (duration / 2f);
+        return new BarEntry(barPosition, duration, data);
     }
 }
