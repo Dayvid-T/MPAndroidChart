@@ -10,10 +10,6 @@ import android.view.View;
 import com.github.mikephil.charting.data.GanttChartData;
 import com.github.mikephil.charting.data.GanttTask;
 
-/**
- * A custom Gantt chart view that renders tasks as horizontal bars.
- * Each bar represents a task with its start time and duration.
- */
 public class GanttChart extends View {
     private GanttChartData data;
     private Paint taskPaint;
@@ -24,7 +20,6 @@ public class GanttChart extends View {
     private float chartTop;
     private float chartRight;
     private float chartBottom;
-    private float taskHeight = 40;
     private float padding = 16;
 
     public GanttChart(Context context) {
@@ -75,31 +70,46 @@ public class GanttChart extends View {
     }
 
     private void calculateDimensions() {
-        chartLeft = padding + 70; // Smaller left margin
+        chartLeft = padding + 70;
         chartTop = padding + 30;
         chartRight = getWidth() - padding;
         chartBottom = getHeight() - padding - 30;
     }
 
+    // Dynamically calculate task height based on available space
+    private float getTaskHeight() {
+        if (data == null || data.getTaskCount() == 0) return 40;
+        float availableHeight = chartBottom - chartTop;
+        int taskCount = data.getTaskCount();
+        // 80% of slot for bar, 20% for gap
+        return (availableHeight / taskCount) * 0.8f;
+    }
+
+    private float getTaskSpacing() {
+        if (data == null || data.getTaskCount() == 0) return 12;
+        float availableHeight = chartBottom - chartTop;
+        int taskCount = data.getTaskCount();
+        return (availableHeight / taskCount) * 0.2f;
+    }
+
     private void drawGrid(Canvas canvas) {
-        // Draw vertical grid lines
         float minTime = data.getMinTime();
         float maxTime = data.getMaxTime();
         float timeRange = maxTime - minTime;
         if (timeRange == 0) timeRange = 100;
 
         int gridLines = 10;
+        Paint timeLabelPaint = new Paint();
+        timeLabelPaint.setColor(0xFF666666);
+        timeLabelPaint.setTextSize(22);
+        timeLabelPaint.setAntiAlias(true);
+        timeLabelPaint.setTextAlign(Paint.Align.CENTER);
+
         for (int i = 0; i <= gridLines; i++) {
             float x = chartLeft + (i / (float) gridLines) * (chartRight - chartLeft);
             canvas.drawLine(x, chartTop, x, chartBottom, gridPaint);
 
-            // Draw time labels
             float time = minTime + (i / (float) gridLines) * timeRange;
-            Paint timeLabelPaint = new Paint();
-            timeLabelPaint.setColor(0xFF666666);
-            timeLabelPaint.setTextSize(22);
-            timeLabelPaint.setAntiAlias(true);
-            timeLabelPaint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(String.format("%.0f", time), x, chartBottom + 30, timeLabelPaint);
         }
     }
@@ -109,6 +119,10 @@ public class GanttChart extends View {
         float maxTime = data.getMaxTime();
         float timeRange = maxTime - minTime;
         if (timeRange == 0) timeRange = 100;
+
+        float taskHeight = getTaskHeight();
+        float taskSpacing = getTaskSpacing();
+        float slotHeight = taskHeight + taskSpacing;
 
         Paint labelPaint = new Paint();
         labelPaint.setColor(0xFF333333);
@@ -124,27 +138,21 @@ public class GanttChart extends View {
         for (int i = 0; i < data.getTaskCount(); i++) {
             GanttTask task = data.getTask(i);
 
-            // Calculate position
-            float taskY = chartTop + i * (taskHeight + 12);
+            float taskY = chartTop + i * slotHeight;
             float startX = chartLeft + ((task.getStartTime() - minTime) / timeRange) * (chartRight - chartLeft);
             float endX = chartLeft + ((task.getEndTime() - minTime) / timeRange) * (chartRight - chartLeft);
 
-            // Ensure minimum width for bars
             if (endX - startX < 10) {
                 endX = startX + 10;
             }
 
-            // Draw task label on left side
-            float labelX = chartLeft - 20;
+            // Center label vertically in the slot
             float labelY = taskY + (taskHeight / 2) + 8;
-            canvas.drawText(task.getName(), labelX, labelY, labelPaint);
+            canvas.drawText(task.getName(), chartLeft - 20, labelY, labelPaint);
 
-            // Draw task bar
             RectF rect = new RectF(startX, taskY, endX, taskY + taskHeight);
             taskPaint.setColor(task.getColor());
             canvas.drawRect(rect, taskPaint);
-
-            // Draw border
             canvas.drawRect(rect, borderPaint);
         }
     }
