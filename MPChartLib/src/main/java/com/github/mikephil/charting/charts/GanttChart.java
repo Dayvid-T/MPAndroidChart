@@ -24,7 +24,7 @@ public class GanttChart extends View {
     private float chartTop;
     private float chartRight;
     private float chartBottom;
-    private float taskHeight = 35;
+    private float taskHeight = 40;
     private float padding = 16;
 
     public GanttChart(Context context) {
@@ -75,10 +75,10 @@ public class GanttChart extends View {
     }
 
     private void calculateDimensions() {
-        chartLeft = padding + 80; // Leave space for task labels
-        chartTop = padding + 40;
+        chartLeft = padding + 100; // Leave space for task labels
+        chartTop = padding + 50;
         chartRight = getWidth() - padding;
-        chartBottom = getHeight() - padding - 40;
+        chartBottom = getHeight() - padding - 50;
     }
 
     private void drawGrid(Canvas canvas) {
@@ -109,7 +109,7 @@ public class GanttChart extends View {
             GanttTask task = data.getTask(i);
 
             // Calculate position
-            float taskY = chartTop + i * (taskHeight + 8);
+            float taskY = chartTop + i * (taskHeight + 12);
             float startX = chartLeft + ((task.getStartTime() - minTime) / timeRange) * (chartRight - chartLeft);
             float endX = chartLeft + ((task.getEndTime() - minTime) / timeRange) * (chartRight - chartLeft);
 
@@ -118,7 +118,7 @@ public class GanttChart extends View {
                 endX = startX + 10;
             }
 
-            // Draw task bar with border
+            // Draw task bar
             RectF rect = new RectF(startX, taskY, endX, taskY + taskHeight);
             taskPaint.setColor(task.getColor());
             canvas.drawRect(rect, taskPaint);
@@ -130,8 +130,16 @@ public class GanttChart extends View {
             borderPaint.setStyle(Paint.Style.STROKE);
             canvas.drawRect(rect, borderPaint);
 
-            // Draw task label on left
-            canvas.drawText(task.getName(), padding + 8, taskY + taskHeight / 2 + 10, textPaint);
+            // Draw task label on left side with proper alignment
+            Paint labelPaint = new Paint();
+            labelPaint.setColor(0xFF333333);
+            labelPaint.setTextSize(26);
+            labelPaint.setAntiAlias(true);
+            labelPaint.setTextAlign(Paint.Align.LEFT);
+            
+            float labelX = padding + 8;
+            float labelY = taskY + (taskHeight / 2) + 8;
+            canvas.drawText(task.getName(), labelX, labelY, labelPaint);
         }
     }
 }
