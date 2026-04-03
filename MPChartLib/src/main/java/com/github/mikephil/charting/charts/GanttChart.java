@@ -75,10 +75,10 @@ public class GanttChart extends View {
     }
 
     private void calculateDimensions() {
-        chartLeft = padding + 100; // Leave space for task labels
-        chartTop = padding + 50;
+        chartLeft = padding + 70; // Smaller left margin
+        chartTop = padding + 30;
         chartRight = getWidth() - padding;
-        chartBottom = getHeight() - padding - 50;
+        chartBottom = getHeight() - padding - 30;
     }
 
     private void drawGrid(Canvas canvas) {
@@ -135,7 +135,7 @@ public class GanttChart extends View {
             }
 
             // Draw task label on left side
-            float labelX = chartLeft - 15;
+            float labelX = chartLeft - 20;
             float labelY = taskY + (taskHeight / 2) + 8;
             canvas.drawText(task.getName(), labelX, labelY, labelPaint);
 
